@@ -1,0 +1,1 @@
+export const DRT_QUEUE = 'amq.rabbitmq.reply-to';

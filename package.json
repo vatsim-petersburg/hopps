@@ -1,0 +1,52 @@
+{
+  "name": "hopps",
+  "version": "0.0.0",
+  "description": "Heavily opinionated wrapper for amqplib",
+  "keywords": ["amqp", "amqplib", "broker", "message", "publish", "rabbit", "rabbitmq", "drt"],
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Denis Zhmurenko",
+    "email": "hi@dyzoon.dev",
+    "url": "https://dyzoon.dev"
+  },
+  "contributors": [
+    {
+      "name": "Maksim Otto",
+      "url": "https://github.com/mksotto"
+    }
+  ],
+  "homepage": "https://github.com/vatsim-petersburg/hopps#readme",
+  "bugs": {
+    "url": "https://github.com/vatsim-petersburg/hopps/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vatsim-petersburg/hopps.git"
+  },
+  "files": [
+    "dist/**/*",
+    "package.json",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build": "npm run build:cjs && npm run build:esm",
+    "clean": "rimraf dist",
+    "prepack": "npm run clean && npm run build"
+  },
+  "dependencies": {
+    "@types/amqplib": "0.10.8",
+    "amqplib": "0.10.9",
+    "uuid": "13.0.0"
+  },
+  "devDependencies": {
+    "rimraf": "6.0.1",
+    "typescript": "5.9.3"
+  }
+}
