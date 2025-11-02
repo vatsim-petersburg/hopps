@@ -1,8 +1,17 @@
 {
   "name": "hopps",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Heavily opinionated wrapper for amqplib",
-  "keywords": ["amqp", "amqplib", "broker", "message", "publish", "rabbit", "rabbitmq", "drt"],
+  "keywords": [
+    "amqp",
+    "amqplib",
+    "broker",
+    "message",
+    "publish",
+    "rabbit",
+    "rabbitmq",
+    "drt"
+  ],
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
