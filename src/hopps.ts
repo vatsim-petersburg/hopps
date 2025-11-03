@@ -34,6 +34,7 @@ export async function hopps<const T extends readonly string[]>({
   rabbitMqUrl,
   inboundQueues,
   outboundQueues,
+  requeueOnError: globalRequeueOnError = true,
   consumeDRT = false
 }: HoppsConfig<T>): Promise<Hopps<T>> {
     const log = console.log.bind(undefined, 'Hopps:') as typeof console.log;
@@ -46,7 +47,7 @@ export async function hopps<const T extends readonly string[]>({
         log('Created channel for RabbitMQ connection');
 
         if(inboundQueues) {
-            for(const { name, consumer } of inboundQueues) {
+            for(const { name, consumer, requeueOnError } of inboundQueues) {
                 await channel.assertQueue(name, { durable: true });
                 log('Asserted inbound queue', name);
 
@@ -61,7 +62,7 @@ export async function hopps<const T extends readonly string[]>({
                         channel.ack(msg);
                     } catch(e) {
                         log('Inner consumer error', e);
-                        channel.nack(msg);
+                        channel.nack(msg, false, requeueOnError ?? globalRequeueOnError);
                     }
                 }, { noAck: false });
                 log('Consuming inbound queue', name);
