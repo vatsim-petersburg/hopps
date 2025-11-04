@@ -41,7 +41,7 @@ export async function hopps<const T extends readonly string[]>({
 
     try {
         const connection = await connect(rabbitMqUrl);
-        log('Connected to RabbitMQ at', rabbitMqUrl);
+        log('Connected to RabbitMQ');
 
         const channel = await connection.createChannel();
         log('Created channel for RabbitMQ connection');
