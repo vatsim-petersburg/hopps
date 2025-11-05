@@ -2,6 +2,7 @@
   "name": "hopps",
   "version": "1.1.0",
   "description": "Heavily opinionated wrapper for amqplib",
+  "type": "module",
   "keywords": [
     "amqp",
     "amqplib",
@@ -12,9 +13,13 @@
     "rabbitmq",
     "drt"
   ],
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
+  "main": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
+  "exports": {
+    "import": "./dist/esm/index.js",
+    "types": "./dist/types/index.d.ts",
+    "require": "./dist/cjs/index.js"
+  },
   "license": "Apache-2.0",
   "author": {
     "name": "Denis Zhmurenko",
