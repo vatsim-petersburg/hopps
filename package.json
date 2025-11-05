@@ -1,6 +1,6 @@
 {
   "name": "hopps",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Heavily opinionated wrapper for amqplib",
   "keywords": [
     "amqp",
