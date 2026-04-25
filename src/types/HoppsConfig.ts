@@ -1,4 +1,6 @@
 import {Queue} from "./Queue";
+import {Plugin} from './Plugin';
+import {Channel} from "amqplib";
 
 /**
  * Configuration options for initializing the Hopps instance
@@ -25,4 +27,8 @@ export type HoppsConfig<T extends readonly string[]> = {
      * @default false
      */
     consumeDRT?: boolean;
+    /**
+     * Plugins allow direct access to the amqplib {@link Channel} to assert any queues and/or declare consumers dynamically. Use with caution
+     */
+    plugins?: Plugin[];
 };

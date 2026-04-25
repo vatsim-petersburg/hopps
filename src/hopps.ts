@@ -36,7 +36,8 @@ export async function hopps<const T extends readonly string[]>({
   inboundQueues,
   outboundQueues,
   requeueOnError: globalRequeueOnError = true,
-  consumeDRT = false
+  consumeDRT = false,
+  plugins
 }: HoppsConfig<T>): Promise<Hopps<T>> {
     try {
         const connection = await connect(rabbitMqUrl);
@@ -87,6 +88,8 @@ export async function hopps<const T extends readonly string[]>({
                 drtReplies.delete(msg.properties.correlationId);
             }, { noAck: true });
         }
+
+        if(plugins) plugins.forEach(plugin => plugin(channel));
 
         return {
             log,
