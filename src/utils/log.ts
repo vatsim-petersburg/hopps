@@ -1,13 +1,13 @@
 type Level = 'error' | 'warning' | 'info' | 'debug';
 
-const hoppsLog = (level: Level, ...msg: string[]) => {
+const hoppsLog = (level: Level, ...msg: any[]) => {
     if(level === 'debug' && process.env.HOPPS_DEBUG !== 'true') return;
 
     const sections = {
         time: new Date().toISOString(),
         component: 'hopps',
         level,
-        msg: msg.join(' '),
+        msg: msg.map(String).join(' '),
     };
 
     const message = Object.entries(sections).map(([key, value]) => `${key}=${value}`).join(' ');
@@ -24,9 +24,9 @@ const hoppsLog = (level: Level, ...msg: string[]) => {
     }
 };
 
-export const log = Object.assign(hoppsLog.bind('info'), {
-    error: hoppsLog.bind('error'),
-    warning: hoppsLog.bind('warning'),
-    info: hoppsLog.bind('info'),
-    debug: hoppsLog.bind('debug'),
+export const log = Object.assign(hoppsLog.bind(null,'info'), {
+    error: hoppsLog.bind(null, 'error'),
+    warning: hoppsLog.bind(null,'warning'),
+    info: hoppsLog.bind(null,'info'),
+    debug: hoppsLog.bind(null,'debug'),
 })
