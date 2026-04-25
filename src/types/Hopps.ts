@@ -1,12 +1,13 @@
 import {UpperSnakeKeys} from "./UpperSnakeKeys";
 import {Options} from "amqplib";
+import {log} from "../utils/log";
 
 /**
  * Hopps instance returned after successful connection
  */
 export type Hopps<T extends readonly string[]> = {
-    /** Logging function with `Hopps:` prefix */
-    log: typeof console.log;
+    /** Logging function for hopps-related messages */
+    log: typeof log;
     /**
      * Normalized outbound queue names in UPPER_SNAKE_CASE
      * @example 'foo.bar.baz' -> 'FOO_BAR_BAZ'
