@@ -1,6 +1,8 @@
-type Level = 'error' | 'warning' | 'info' | 'debug';
+const LEVELS = ['error', 'warn', 'info', 'debug'] as const;
+type Level = typeof LEVELS[number];
 
 const hoppsLog = (level: Level, ...msg: any[]) => {
+    if(!LEVELS.includes(level)) return;
     if(level === 'debug' && process.env.HOPPS_DEBUG !== 'true') return;
 
     const sections = {
@@ -12,21 +14,12 @@ const hoppsLog = (level: Level, ...msg: any[]) => {
 
     const message = Object.entries(sections).map(([key, value]) => `${key}=${value}`).join(' ');
 
-    switch (level) {
-        case 'error':
-            return console.error(message);
-        case 'warning':
-            return console.warn(message);
-        case 'info':
-            return console.info(message);
-        case 'debug':
-            return console.debug(message);
-    }
+    return console[level](message);
 };
 
 export const log = Object.assign(hoppsLog.bind(null, 'info'), {
     error: hoppsLog.bind(null, 'error'),
-    warning: hoppsLog.bind(null, 'warning'),
+    warn: hoppsLog.bind(null, 'warn'),
     info: hoppsLog.bind(null, 'info'),
     debug: hoppsLog.bind(null, 'debug'),
-})
+});
