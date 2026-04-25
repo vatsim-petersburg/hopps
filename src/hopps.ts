@@ -3,6 +3,7 @@ import { toUpperSnakeKeys } from "./utils/toUpperSnakeKeys";
 import { DRT_QUEUE } from "./constants/constants";
 import type { Hopps, HoppsConfig, UpperSnakeKeys } from "./types";
 import {sendAndWaitForReply} from "./modules/sendAndWaitForReply";
+import { log } from "./utils/log";
 
 export function hopps<const T extends readonly string[]>(
     config: HoppsConfig<T> & { consumeDRT: true }
@@ -37,19 +38,17 @@ export async function hopps<const T extends readonly string[]>({
   requeueOnError: globalRequeueOnError = true,
   consumeDRT = false
 }: HoppsConfig<T>): Promise<Hopps<T>> {
-    const log = console.log.bind(undefined, 'Hopps:') as typeof console.log;
-
     try {
         const connection = await connect(rabbitMqUrl);
-        log('Connected to RabbitMQ');
+        log.info('Connected to RabbitMQ');
 
         const channel = await connection.createChannel();
-        log('Created channel for RabbitMQ connection');
+        log.info('Created channel for RabbitMQ connection');
 
         if(inboundQueues) {
             for(const { name, consumer, requeueOnError } of inboundQueues) {
                 await channel.assertQueue(name, { durable: true });
-                log('Asserted inbound queue', name);
+                log.info('Asserted inbound queue', name);
 
                 void channel.consume(name, async (msg) => {
                     if(!msg) return;
@@ -61,11 +60,11 @@ export async function hopps<const T extends readonly string[]>({
                         });
                         channel.ack(msg);
                     } catch(e) {
-                        log('Inner consumer error', e);
+                        log.error('Inner consumer error', e);
                         channel.nack(msg, false, requeueOnError ?? globalRequeueOnError);
                     }
                 }, { noAck: false });
-                log('Consuming inbound queue', name);
+                log.info('Consuming inbound queue', name);
             }
         }
 
@@ -73,7 +72,7 @@ export async function hopps<const T extends readonly string[]>({
         if(outboundQueues) {
             for(const name of outboundQueues) {
                 await channel.assertQueue(name, { durable: true });
-                log('Asserted outbound queue', name);
+                log.info('Asserted outbound queue', name);
             }
         }
 
@@ -104,7 +103,7 @@ export async function hopps<const T extends readonly string[]>({
             ) => sendAndWaitForReply<TContent, TReply>(channel, consumeDRT ? drtReplies : undefined, queue, content, options)
         }
     } catch(e) {
-        log('Error connecting to RabbitMQ with', e);
+        log.error('Error connecting to RabbitMQ with', e);
         throw e;
     }
 }
