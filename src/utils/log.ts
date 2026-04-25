@@ -24,9 +24,9 @@ const hoppsLog = (level: Level, ...msg: any[]) => {
     }
 };
 
-export const log = Object.assign(hoppsLog.bind(null,'info'), {
+export const log = Object.assign(hoppsLog.bind(null, 'info'), {
     error: hoppsLog.bind(null, 'error'),
-    warning: hoppsLog.bind(null,'warning'),
-    info: hoppsLog.bind(null,'info'),
-    debug: hoppsLog.bind(null,'debug'),
+    warning: hoppsLog.bind(null, 'warning'),
+    info: hoppsLog.bind(null, 'info'),
+    debug: hoppsLog.bind(null, 'debug'),
 })
