@@ -89,7 +89,7 @@ export async function hopps<const T extends readonly string[]>({
             }, { noAck: true });
         }
 
-        if(plugins) plugins.forEach(plugin => plugin(channel));
+        if(plugins) plugins.forEach(plugin => plugin(channel, log));
 
         return {
             log,
