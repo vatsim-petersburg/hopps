@@ -93,7 +93,11 @@ export async function hopps<const T extends readonly string[], P extends Record<
         const pluginsAccessors = {} as Hopps<T, P>['plugins'];
         if(plugins) {
             for(const [name, func] of Object.entries(plugins)) {
-                (pluginsAccessors as Record<string, unknown>)[name] = await func(channel, log);
+                try {
+                    (pluginsAccessors as Record<string, unknown>)[name] = await func(channel, log);
+                } catch(e) {
+                    log.warn('error initializing plugin', name, e);
+                }
             }
         }
 
