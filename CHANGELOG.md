@@ -1,3 +1,7 @@
+## 1.2.0
+- Added leveled logs
+- Added plugins
+
 ## 1.1.1
 - Fixed hopps not being correctly imported in ESM mode
 
