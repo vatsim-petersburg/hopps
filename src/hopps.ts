@@ -2,16 +2,17 @@ import { connect, ConsumeMessage, Options } from "amqplib";
 import { toUpperSnakeKeys } from "./utils/toUpperSnakeKeys";
 import { DRT_QUEUE } from "./constants/constants";
 import type { Hopps, HoppsConfig, UpperSnakeKeys } from "./types";
+import type { Plugin } from "./types/Plugin";
 import {sendAndWaitForReply} from "./modules/sendAndWaitForReply";
 import { log } from "./utils/log";
 
-export function hopps<const T extends readonly string[]>(
-    config: HoppsConfig<T> & { consumeDRT: true }
-): Promise<Hopps<T>>;
+export function hopps<const T extends readonly string[], P extends Record<string, Plugin>>(
+    config: HoppsConfig<T, P> & { consumeDRT: true }
+): Promise<Hopps<T, P>>;
 
-export function hopps<const T extends readonly string[]>(
-    config: HoppsConfig<T> & { consumeDRT?: false }
-): Promise<Hopps<T> & { sendAndWaitForReply: never }>;
+export function hopps<const T extends readonly string[], P extends Record<string, Plugin>>(
+    config: HoppsConfig<T, P> & { consumeDRT?: false }
+): Promise<Hopps<T, P> & { sendAndWaitForReply: never }>;
 
 /**
  * Initializes and configures an Hopps instance with RabbitMQ
@@ -31,14 +32,14 @@ export function hopps<const T extends readonly string[]>(
  * @param {HoppsConfig} config - Configuration object for Hopps instance
  * @returns {Promise<Hopps>} Hopps instance
  */
-export async function hopps<const T extends readonly string[]>({
+export async function hopps<const T extends readonly string[], P extends Record<string, Plugin>>({
   rabbitMqUrl,
   inboundQueues,
   outboundQueues,
   requeueOnError: globalRequeueOnError = true,
   consumeDRT = false,
   plugins
-}: HoppsConfig<T>): Promise<Hopps<T>> {
+}: HoppsConfig<T, P>): Promise<Hopps<T, P>> {
     try {
         const connection = await connect(rabbitMqUrl);
         log.info('Connected to RabbitMQ');
@@ -89,7 +90,12 @@ export async function hopps<const T extends readonly string[]>({
             }, { noAck: true });
         }
 
-        if(plugins) plugins.forEach(plugin => plugin(channel, log));
+        const pluginsAccessors = {} as Hopps<T, P>['plugins'];
+        if(plugins) {
+            for(const [name, func] of Object.entries(plugins)) {
+                (pluginsAccessors as Record<string, unknown>)[name] = await func(channel, log);
+            }
+        }
 
         return {
             log,
@@ -103,7 +109,8 @@ export async function hopps<const T extends readonly string[]>({
                 queue: string,
                 content: TContent,
                 options?: Options.Publish
-            ) => sendAndWaitForReply<TContent, TReply>(channel, consumeDRT ? drtReplies : undefined, queue, content, options)
+            ) => sendAndWaitForReply<TContent, TReply>(channel, consumeDRT ? drtReplies : undefined, queue, content, options),
+            plugins: pluginsAccessors
         }
     } catch(e) {
         log.error('Error connecting to RabbitMQ with', e);

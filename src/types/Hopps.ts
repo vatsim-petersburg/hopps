@@ -1,11 +1,13 @@
-import {UpperSnakeKeys} from "./UpperSnakeKeys";
-import {Options} from "amqplib";
+import type {UpperSnakeKeys} from "./UpperSnakeKeys";
+import type {Options} from "amqplib";
 import {log} from "../utils/log";
+import type {Plugin} from "./Plugin";
+import type {HoppsConfig} from './HoppsConfig';
 
 /**
  * Hopps instance returned after successful connection
  */
-export type Hopps<T extends readonly string[]> = {
+export type Hopps<T extends readonly string[], P extends Record<string, Plugin> = Record<string, Plugin>> = {
     /** Logging function for hopps-related messages */
     log: typeof log;
     /**
@@ -25,4 +27,9 @@ export type Hopps<T extends readonly string[]> = {
         content: TContent,
         options?: Options.Publish
     ) => Promise<TReply>;
+    /**
+     * Resolved return values of the {@link HoppsConfig.plugins} functions, keyed by plugin name.
+     * Each value is the awaited result of the corresponding plugin function, preserving its type.
+     */
+    plugins: { [K in keyof P]: Awaited<ReturnType<P[K]>> };
 };
